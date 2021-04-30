@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import 'antd/dist/antd.css';
 import { Card } from 'antd';
 import { Form, Input, Button } from 'antd';
-import { Divider } from 'antd';
+import {CheckCircleOutlined, CloseCircleOutlined} from '@ant-design/icons';
 
 
 
@@ -10,7 +10,6 @@ class ToDo extends Component {
     constructor(){
         super();
         this.state={
-            id:0,
             task:"",
             tasks:[]
         }
@@ -24,10 +23,13 @@ class ToDo extends Component {
     }
 
     addtask=()=>{
-        let task={id:this.state.id,title:this.state.task};
+        let id=0;
+        if(this.state.tasks.length!=0)
+            id=this.state.tasks[this.state.tasks.length-1].id+1;
+
+        let task={id:id,title:this.state.task,done:false};
         this.state.tasks.push(task);
         this.setState({tasks:this.state.tasks});
-        this.setState({id:this.state.id+1});
         this.saveToLocalStorage();
 
     }
@@ -35,14 +37,41 @@ class ToDo extends Component {
     saveToLocalStorage=()=>{
         localStorage["tasks"] = JSON.stringify(this.state.tasks);
     }
+    donetask=(id)=>{
+        let index;
+        for (var i=0; i < this.state.tasks.length; i++) {
+            if (this.state.tasks[i].id === id) {
+                index = i;
+            }
+        }
+        //console.log(id)
+        //console.log(index)
+        this.state.tasks[index].done=true;
+        this.setState({tasks:this.state.tasks});
+        this.saveToLocalStorage();
 
+    }
+    removetask=(id)=>{
+        let index;
+        for (var i=0; i < this.state.tasks.length; i++) {
+            if (this.state.tasks[i].id === id) {
+                index = i;
+            }
+        } 
+        this.state.tasks.splice(index, 1);
+        this.setState({tasks:this.state.tasks});
+        this.saveToLocalStorage();
+     
+    }
     render(){
         return(
             <Card title="My To-do List">
 
                {this.state.tasks.length > 0 ?this.state.tasks.map((item)=>{
-                return <DisplayTask task={item} key={item.id} />
+                return <DisplayTask task={item} key={item.id} doneTask={this.donetask} removeTask={this.removetask}/>
             }):"No tasks yet"}
+
+
                 <div   style={{
                         display: "flex",
                         justifyContent: "center",
@@ -71,9 +100,29 @@ class ToDo extends Component {
 
 class DisplayTask extends React.Component{
     render(){
-        return  <Card type="inner" className="m-1">
+        let style={
+            backgroundColor:"Aquamarine"
+        }
+        if(this.props.task.done==false){
+            return  <Card type="inner" className="m-1">
+                {this.props.task.title}   
+                <div style={{float:"right"}}>
+                    <CheckCircleOutlined className="m-1" style={{ fontSize: '200%', color:"green"}} onClick={()=>this.props.doneTask(this.props.task.id)}/>
+                    <CloseCircleOutlined className="m-1" style={{ fontSize: '200%', color:"red"}} onClick={()=>this.props.removeTask(this.props.task.id)} />
+
+                </div>
+                </Card>
+        }
+        else{
+            return  <Card type="inner" className="m-1" style={style}>
             {this.props.task.title}   
+            <div style={{float:"right"}}>
+                    <CheckCircleOutlined className="m-1" style={{ fontSize: '200%', color:"green"}} onClick={()=>this.props.doneTask(this.props.task.id)}/>
+                    <CloseCircleOutlined className="m-1" style={{ fontSize: '200%', color:"red"}} onClick={()=>this.props.removeTask(this.props.task.id)} />
+
+            </div>
             </Card>
+        }
     }
 }
 
