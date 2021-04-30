@@ -1,3 +1,15 @@
+# Project Preview
+
+## To-do List
+![](Todo_scene.PNG)
+
+## Movie List
+![](Movies_scene.PNG)
+
+## Login Page
+![](Login_scene.PNG)
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
